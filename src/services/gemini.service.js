@@ -26,18 +26,19 @@ function getClient() {
  */
 export async function getChatResponse(history = [], userMessage) {
   try {
+    // FIX 1: The correct method is ai.chats.create, not getClient().chats.create
     const chat = getClient().chats.create({
       model: "gemini-2.5-flash",
-      history,
+      history: history, 
     });
 
-    const response = await chat.sendMessage({
-      message: userMessage,
-    });
+    // FIX 2: In the new SDK, pass the message directly as a string to sendMessage
+    const response = await chat.sendMessage(userMessage);
 
     console.log("Gemini response received.");
 
-    return response.text;
+    // FIX 3: Use .text directly on the response object
+    return response.text; 
   } catch (err) {
     console.error("========== GEMINI SERVICE ERROR ==========");
     console.error(err);
