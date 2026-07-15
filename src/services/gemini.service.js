@@ -15,7 +15,7 @@ function getClient() {
     ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
     });
-    console.log("Gemini client initialized.");
+    console.log("Gemini client initialized successfully.");
   }
 
   return ai;
@@ -26,24 +26,25 @@ function getClient() {
  */
 export async function getChatResponse(history = [], userMessage) {
   try {
-    // FIX 1: The correct method is ai.chats.create, not getClient().chats.create
-    const chat = getClient().chats.create({
+    const client = getClient();
+
+    // Initialize the chat session
+    const chat = client.chats.create({
       model: "gemini-2.5-flash",
       history: history, 
     });
 
-    // FIX 2: In the new SDK, pass the message directly as a string to sendMessage
-    const response = await chat.sendMessage(userMessage);
+    // CORRECT SYNTAX: Pass an object containing the 'message' string parameter
+    const response = await chat.sendMessage({
+      message: userMessage
+    });
 
-    console.log("Gemini response received.");
-
-    // FIX 3: Use .text directly on the response object
+    console.log("Gemini response received successfully.");
     return response.text; 
   } catch (err) {
     console.error("========== GEMINI SERVICE ERROR ==========");
     console.error(err);
     console.error("==========================================");
-
     throw err;
   }
 }
